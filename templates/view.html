@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+
+    <title>쇼핑몰 - 상세페이지</title>
+
+    <meta property="og:title" content="쇼핑몰 상세페이지" />
+    <meta property="og:description" content="제품 상세 설명!!" />
+    <meta
+      property="og:image"
+      content="https://cdn.pixabay.com/photo/2016/11/29/06/17/audience-1867754_1280.jpg"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: 'Noto Serif KR', serif;
+      }
+
+      #hd {
+        width: 100%;
+      }
+      .hd-con {
+        width: 720px;
+        height: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 auto;
+        background-color: #f7f7f7;
+      }
+      .hd-tit {
+        padding: 0 20px;
+      }
+      .hd-nav {
+        padding: 0 20px;
+      }
+      .hd-nav a {
+        display: inline-block;
+      }
+      .hd-nav a:nth-child(n + 2) {
+        margin-left: 5px;
+      }
+      .hd-nav > form > button {
+        font-size: 16px;
+        padding: 0 5px;
+        height: 40px;
+      }
+
+      #ft {
+        width: 100%;
+      }
+      .ft-con {
+        width: 720px;
+        height: 180px;
+        margin: 0 auto;
+      }
+      .ft-item {
+        padding: 20px 20px 0 20px;
+      }
+
+      #view {
+        width: 100%;
+      }
+      .view-con {
+        width: 720px;
+        height: 720px;
+        margin: 0 auto;
+      }
+      .view-con:nth-child(1) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .view-con:nth-child(2) {
+        background-color: #f7f7f7;
+      }
+      .view-pic {
+        position: relative;
+        overflow: hidden;
+        width: 320px;
+        height: 320px;
+      }
+      .view-pic img {
+        position: absolute;
+        width: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .view-info {
+        width: 320px;
+        height: 320px;
+        margin-left: 20px;
+      }
+      .view-info p:nth-child(1) {
+        font-weight: 600;
+      }
+      .view-desc {
+        padding: 20px 20px 0 20px;
+      }
+    </style>
+    <script>
+      function btn(num) {
+        let formData = new FormData();
+        formData.append('num', num);
+
+        fetch('/shop/cards', { method: 'POST', body: formData })
+          .then((res) => res.json())
+          .then((res) => {
+            alert(res.data);
+            window.location.reload();
+          });
+      }
+
+      $(window).on('load', function () {
+        $('.view-pic').empty();
+        $('.view-info').empty();
+        $('.view-desc').empty();
+
+        let itemImgUrl = '{{ view_item.url }}';
+        let itemNum = '{{ view_item.num }}';
+        let itemName = '{{ view_item.name }}';
+        let itemCategory = '{{ view_item.category }}';
+        let itemPrice = '{{ view_item.price }}';
+        let itemCount = '{{ view_item.count }}';
+        let itemArea = '{{ view_item.area }}';
+
+        let tempHtml = `<img src="${itemImgUrl}">`;
+
+        let tempHtmlInfo = `<p>${itemName}</p>
+                        <p>분류: ${itemCategory}</p>
+                        <p>가격: ${itemPrice} 원</p>
+                        <p>수량: ${itemCount}</p>
+                        <button onclick="btn(${itemNum})" class="btn btn-outline-primary" type="button">장바구니 추가</button>`;
+
+        let tempHtmlDesc = `<div>
+                              ${itemArea}
+                            </div>`;
+
+        $('.view-pic').append(tempHtml);
+        $('.view-info').append(tempHtmlInfo);
+        $('.view-desc').append(tempHtmlDesc);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="hd">
+      <div class="hd-con">
+        <div class="hd-tit">
+          <a href="/" class="link-primary">쇼핑몰8</a>
+        </div>
+
+        <div class="hd-nav">
+          <a href="/" class="link-secondary">장바구니</a>
+          <a href="/" class="link-success">로그인</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="view">
+      <div class="view-con">
+        <div class="view-pic">
+          <img
+            src="https://cdn.pixabay.com/photo/2020/07/15/18/32/sneakers-5408674_1280.png"
+          />
+        </div>
+
+        <div class="view-info">
+          <p>운동화</p>
+          <p>분류</p>
+          <p>가격: 10,0000 원</p>
+          <p>수량: 99</p>
+          <button class="btn btn-outline-primary" type="button">
+            장바구니 추가
+          </button>
+        </div>
+      </div>
+
+      <div class="view-con">
+        <div class="view-desc">
+          <div>운동화 상세 설명입니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ft">
+      <div class="ft-con">
+        <div class="ft-item">
+          <p>Copyright 2023 쇼핑몰8</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

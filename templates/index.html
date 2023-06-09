@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, 
+    initial-scale=1.0"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+
+    <title>Document</title>
+
+    <style>
+      #modal {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .btn {
+        border-radius: transparent;
+        margin-left: 20px;
+        margin-right: 20px;
+      }
+      .main {
+        margin-top: 50px;
+        margin-bottom: 50px;
+      }
+      .navbar {
+        min-height: 80px;
+      }
+    </style>
+    <script>
+      $(document).ready(function () {
+        listing();
+        card();
+        $('#btn-modal').click(function () {
+          $('#modal').css('display', 'none');
+        });
+
+        $('.close-area').click(function () {
+          $('#modal').css('display', 'block');
+        });
+      });
+      function posting() {
+        let url = $('#url').val();
+        let name = $('#name').val();
+        let category = $('#category').val();
+        let price = $('#price').val();
+        let count = $('#count').val();
+        let area = $('#area').val();
+        let formData = new FormData();
+        formData.append('url_give', url);
+        formData.append('name_give', name);
+        formData.append('category_give', category);
+        formData.append('price_give', price);
+        formData.append('count_give', count);
+        formData.append('area_give', area);
+
+        fetch('/shop', { method: 'POST', body: formData })
+          .then((res) => res.json())
+          .then((data) => {
+            alert(data['msg']);
+            window.location.reload();
+          });
+      }
+      function listing() {
+        fetch('/shop')
+          .then((res) => res.json())
+          .then((data) => {
+            let rows = data.result;
+
+            rows.forEach((e) => {
+              let num = e.num;
+              let url = e.url;
+              let name = e.name;
+              let category = e.category;
+              let price = e.price;
+              let count = e.count;
+              let area = e.area;
+
+              let temp_html = `
+              <div class="col">
+            <div class="card h-100">
+              <img src="${url}"  class="card-img-top" />
+              <div class="card-body">
+                <h6 class="card-title">${name}</h6>
+                <p class="mycomment">${area.slice(0, 50)}</p>
+                <p>수량: ${count}</p>
+                <p class="card-text"> ${price}원 </p>
+                <button onclick="btn(${num})" type="button" class="btn btn-outline-primary">담기</button>
+                <a href="/view?itemid=${num}" class="link-primary">상세보기</a>
+              </div>
+            </div>
+          </div>
+              `;
+              $('#cards-box').append(temp_html);
+            });
+          });
+      }
+      function btn(num) {
+        let formData = new FormData();
+        formData.append('num', num);
+
+        fetch('/shop/cards', { method: 'POST', body: formData })
+          .then((res) => res.json())
+          .then((res) => {
+            alert(res.data);
+            window.location.reload();
+          });
+      }
+      function card() {
+        fetch('/shop/cards')
+          .then((res) => res.json())
+          .then((data) => {
+            let rows = data.status;
+            temp_html = `
+            <span
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            >
+              ${rows.length}
+              <span class="visually-hidden">unread messages</span>
+            </span>`;
+            $('#cnt').append(temp_html);
+          });
+      }
+    </script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href=""><b> Nike shoes</b></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <button
+              type="button"
+              class="btn"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+            >
+              등록하기
+            </button>
+          </ul>
+          <button
+            type="button"
+            id="cnt"
+            class="btn btn-primary position-relative"
+          >
+            <i
+              onclick="window.location.href='/card'"
+              class="bi bi-cart-plus-fill"
+            ></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div class="main">
+      <!-- Button trigger modal -->
+
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">제품 등록</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div id="modal" class="modal-body">
+              상품사진
+              <input id="url" type="text" /><br />
+
+              상품명
+              <input id="name" type="text" /><br />
+              카테고리
+              <input id="category" type="text" /><br />
+              가격
+              <input id="price" type="text" /><br />
+              수량
+              <input id="count" type="text" /><br />
+              상세설명<br />
+              <textarea name="" id="area" cols="30" rows="10"></textarea>
+            </div>
+            <div class="modal-footer">
+              <button onclick="posting()" type="button" class="btn btn-primary">
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row row-cols-1 row-cols-md-4 g-4" id="cards-box"></div>
+      </div>
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">...</div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" class="btn btn-primary">
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
